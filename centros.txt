@@ -1,1 +1,2 @@
-ingrese el origen|ingrese el destino|ingrese la distancia|ingrese el precio
+
+tena|quito|20|25
