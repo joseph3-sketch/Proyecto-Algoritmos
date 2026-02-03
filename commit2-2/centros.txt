@@ -1,0 +1,4 @@
+Cuenca|Quito|20
+quito|cuenca|20
+guayaquil|cuenca|20
+quito|cuenca|20
