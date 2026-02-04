@@ -1,2 +1,1 @@
-
-tena|quito|20|25
+quito|cuenca|20

@@ -1,4 +1,3 @@
-
 arbol_logistico = {
     "nombre": "Ecuador",
     "regiones": {
@@ -61,7 +60,6 @@ def dijkstra(grafo, inicio, fin):
 
         if actual is None:
             break
-
         visitados.add(actual)
 
         for vecino, peso in grafo[actual].items():
