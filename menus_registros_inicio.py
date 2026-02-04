@@ -3,6 +3,7 @@ from implementacion import *
 import re
 from tkinter import messagebox
 import os
+
 ventana = tk.Tk()
 ventana.title("PoliDelivery - EPN")
 ventana.geometry("420x350")
@@ -39,7 +40,7 @@ def menu_registrar():
     tk.Label(text="Ingrese un correo").pack()
     tk.Label(text="\n").pack
     
-    password_registrar = tk.Entry(ventana) 
+    password_registrar = tk.Entry(ventana,show="*") 
     correo_registrar.pack()
     tk.Label(text="Ingrese una contraseña").pack()
     password_registrar.pack()
@@ -65,25 +66,28 @@ def guardar_user_en_registros():
     with open("usuarios.txt","a") as archivos_user:
         archivos_user.write(nombre_registrar.get()+"|"+identificador_registrar.get()+"|"+edad_registrar.get()+"|"+correo_registrar.get()+"|"+password_registrar.get()+"\n")
         
+
 def menu_iniciar_seccion():
     limpiar_ventana()
     global seccion_correo, seccion_password
     seccion_correo = tk.Entry(ventana)
-    seccion_password = tk.Entry(ventana)
+    seccion_password = tk.Entry(ventana,show="*")
     tk.Label(text="Ingrese su correo").pack()
     seccion_correo.pack()
+    
     tk.Label(text="Ingrese su contraseña").pack()
     seccion_password.pack()
-
     tk.Button(ventana, text="Iniciar Sesión", command=leer_user).pack()
     tk.Button(ventana, text="Volver", command=menu_Principal).pack()
 
 
 def leer_user():
+    global seccion_password,guardar_correo
     with open("registros.txt", "r") as archivo:
         for linea in archivo:
             correo, password = linea.strip().split("|")
             if correo == seccion_correo.get() and password == seccion_password.get():
+                guardar_correo = correo
                 menu_User()
                 return
         return  messagebox.showerror("Error", "correo o contraseña incorrecta")
@@ -92,7 +96,7 @@ def menu_iniciar_admin():
     limpiar_ventana()
     global admin_correo, admin_password
     admin_correo = tk.Entry(ventana)
-    admin_password = tk.Entry(ventana)
+    admin_password = tk.Entry(ventana,show="*")
     tk.Label(text="Ingrese su correo").pack()
     admin_correo.pack()
     tk.Label(text="Ingrese su contraseña").pack()
@@ -125,12 +129,11 @@ def menu_admin():
     destino.pack()
     distancia.pack()
     tk.Button(ventana, text="Guardar Ruta", command=guardar_ruta).pack(pady=5)
-    tk.Button(ventana, text="Volver", command=menu_Principal).pack()
     
     # Nuevas opciones
     tk.Label(ventana, text="--- Gestión de Centros ---").pack(pady=5)
-    tk.Button(ventana, text="Actualizar Nombre de Centro", width=25, command=ventana_actualizar).pack(pady=2)
-    tk.Button(ventana, text="Eliminar Centro", width=25, command=ventana_eliminar, bg="#f8d7da").pack(pady=2)
+    tk.Button(ventana, text="Actualizar Nombre de Centro", width=25,bg="#28a745", fg="white", command=ventana_actualizar).pack(pady=2)
+    tk.Button(ventana, text="Eliminar Centro", width=25, command=ventana_eliminar, bg="red").pack(pady=2)
     
     tk.Button(ventana, text="Volver al Menú Principal", command=menu_Principal).pack(pady=10)
 
@@ -157,9 +160,14 @@ def menu_User():
     ingrese_region = tk.Entry(ventana)
     tk.Label(text="ingrese una region para listar sus centros disponibles").pack(pady=5)
     ingrese_region.pack()
-    tk.Button(ventana, text="listar centros disponibles", command=lambda:ver_centros(arbol_logistico,ingrese_region.get().capitalize())).pack(pady=5)
+    tk.Button(ventana, text="listar centros disponibles", bg="#17a2b8",command=lambda:ver_centros(arbol_logistico,ingrese_region.get().capitalize())).pack(pady=5)
     #inplemetar el ver regiones disponibles
     tk.Button(ventana, text="Volver", command=menu_Principal).pack()
+    
+    tk.Label(text="-----------------------------------------------------").pack(pady=5)
+    tk.Label(text="Para confirmar el envio de click al button (Enviar paquete)").pack(pady=5)
+    tk.Button(ventana, text="Confirmar y Registrar Envío", command=registrar_envio, bg="#28a745", fg="white").pack(pady=5)
+
 
 
 def mostrar_costo():
@@ -226,8 +234,21 @@ def ventana_actualizar():
     tk.Button(top, text="Actualizar", command=confirmar_actualizacion).pack(pady=10)
 
             
+def registrar_envio():
+    costo = calcular_costo(origen.get(), destino.get())
+
+    if costo is None:
+        messagebox.showerror("Error", "No existe una ruta válida para registrar.")
+        return
+
+    with open("rutas-nombre-del-cliente.txt", "a") as archivo:
+        linea = f"{guardar_correo}|{origen.get().capitalize()}|{destino.get().capitalize()}|{costo:.2f}\n"
+        archivo.write(linea)
+    messagebox.showinfo("Éxito", "Envío registrado correctamente. ¡Gracias por usar el sistema!")
 
 
 if __name__ == "__main__":
     menu_Principal()
     ventana.mainloop()
+
+
